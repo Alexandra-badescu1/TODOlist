@@ -31,7 +31,7 @@ public partial class AddViewModel : BaseViewModel, IQueryAttributable
         todolist = new List<ToDoModel>();
         toSaveOnDB = new ToDoModel();
         GetInitalDataCommand.Execute(null);
-        //Todo.Ok = 0;
+      
     }
 
     [ObservableProperty]

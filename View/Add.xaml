@@ -23,12 +23,12 @@
             HorizontalOptions="Start" 
             Margin="20"/>
             
-            <Frame Grid.Row="1" BorderColor="Gray"
+            <Frame Grid.Row="1" BorderColor="CadetBlue"
                CornerRadius="0"
                Padding="15"
                Margin="5,7,1,8"
                Grid.ColumnSpan="3"   >
-                <Entry Placeholder="Enter ToDo item..."
+                <Entry Placeholder="Enter To do item..."
                 PlaceholderColor="Black"
                 Text="{Binding ToSaveOnDB.Name}"
                 TextColor="Black"
@@ -38,7 +38,7 @@
             </Frame>
             <Button Text="Save"
                 CornerRadius="0"
-                BackgroundColor="Gray"
+                BackgroundColor="CadetBlue"
                 Command="{Binding SaveOnDbCommand}"
                 Grid.Row="3"
                 Grid.Column="0"
@@ -46,7 +46,7 @@
 
             <Button Text="Cancel"
                 CornerRadius="0"
-                BackgroundColor="Gray"
+                BackgroundColor="CadetBlue"
                 Command="{Binding BackCommand}"
                 Grid.Row="3"
                 Grid.Column="2"

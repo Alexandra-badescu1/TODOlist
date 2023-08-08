@@ -12,8 +12,5 @@
                       ContentTemplate="{DataTemplate local:MainPage}"
                       Route="MainPage" />
 
-        <ShellContent Title="EditPopup"
-                      ContentTemplate="{DataTemplate views:Edit}"
-                      Route="Edit"/>
     </TabBar>
 </Shell>

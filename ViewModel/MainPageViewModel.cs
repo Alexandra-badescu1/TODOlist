@@ -1,10 +1,5 @@
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
-using System.Data.Common;
-using System.Windows.Input;
-using ToDolist.Services;
 using TODOlist.Models;
 using TODOlist.Service;
 using TODOlist.View;
@@ -40,12 +35,17 @@ namespace TODOlist.ViewModel;
     private async void GetInitalData() => Todolist = await _dbConnection.GetItemsAsync();
 
     [RelayCommand]
-    private async void GoToEditPopup()
+    async Task GoToEditPage(ToDoModel toDo)
     {
-        Todo.Val = 0;
-        var popup = new Edit(todo);
-        await Shell.Current.ShowPopupAsync(popup);
-        //await Shell.Current.GoToAsync($"{nameof(Edit)}");
+
+        Todo.Id = -2;
+        var navigationParameter = new Dictionary<string, object>
+        {
+            { "Todo", toDo }
+        };
+
+        toDo = null;
+        await Shell.Current.GoToAsync(nameof(Edit),navigationParameter);
     }
 
     [RelayCommand]
@@ -56,7 +56,7 @@ namespace TODOlist.ViewModel;
         {
             { "Todo", Todo }
         };
-        todo.Val = -1;
+        Todo.Id = -1;
         await Shell.Current.GoToAsync($"{nameof(Add)}", navigationParameter);
     }
 
@@ -76,19 +76,20 @@ namespace TODOlist.ViewModel;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-        if(Todo.Val == 0 && query.ContainsKey("IdUser"))
+    { 
+        if(Todo.Id == -2 && query.ContainsKey("IdUser"))
         {
-            Console.WriteLine(Todo.Name);
-            var id = (int)query["IdUser"];
-            var todoItem = Todolist.Where(x => x.Id == id).FirstOrDefault();
-            Todolist.Remove(todoItem);
-            Console.WriteLine("1");
-            Console.WriteLine("Before " + query);
-            query = new Dictionary<string, object>();
-            Console.WriteLine("After " + query);
+                if (query["IdUser"] == null)
+                    return;
+                var id = (int)query["IdUser"];
+                var todoItem = Todolist.Where(x => x.Id == id).FirstOrDefault();
+            // Todolist.Remove(todoItem);
+              if(todoItem.Val == 0)
+                deleteOnDbCommand.Execute(todoItem);
+                query = new Dictionary<string, object>();
+           
         }
-        else if (Todo.Val == -1 && query.ContainsKey("NameUser"))
+         if (Todo.Id == -1 && query.ContainsKey("NameUser"))
         {
             Console.WriteLine(Todo.Name);
 
@@ -97,15 +98,12 @@ namespace TODOlist.ViewModel;
             if (element == null)
                 return;
             ToSaveOnDB = element;
-
-            Console.WriteLine("2");
-            Console.WriteLine("Before " + query);
             Todolist.Add(element);
             query = new Dictionary<string, object>();
-            Console.WriteLine("After " + query);
         }
-
+        GetInitalData();
     }
+    
 }
 
 

@@ -86,7 +86,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<View.Add>();
         builder.Services.AddSingleton<ViewModel.AddViewModel>();
         builder.Services.AddSingleton<View.Edit>();
-        builder.Services.AddSingleton<ViewModel.AddViewModel>();
+        builder.Services.AddSingleton<ViewModel.EditViewModel>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<ViewModel.MainPageViewModel>();
         builder.Services.AddScoped<DbConection>();

@@ -1,80 +1,96 @@
 
-
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+using TODOlist.Messages;
 using TODOlist.Models;
 using TODOlist.Service;
 
 namespace TODOlist.ViewModel;
-    [QueryProperty("Text", "Text")]
 
-    public partial class EditViewModel : Popup
+public partial class EditViewModel : BaseViewModel, IQueryAttributable
 {
-    public List<ToDoModel> ToDolist { get; set; }
 
-    public ICommand CloseCommand { get; set; }
-    public ObservableCollection<string> Items { get; set; }
-    //[ObservableProperty]
-    private ToDoModel _todo;
-    public ToDoModel Todo
+    [ObservableProperty]
+    ToDoModel text;
+
+    [ObservableProperty]
+    List<ToDoModel> todolist;
+
+    [ObservableProperty]
+    ToDoModel toSaveOnDB;
+
+    private readonly DbConection connection;
+
+    public EditViewModel(DbConection dbConnection)
     {
-        get { return _todo; }
-        set
-        {
-            if (_todo != value)
-            {
-                _todo = value;
-                OnPropertyChanged(nameof(Todo));
-            }
-        }
+        connection = dbConnection;
+        Todolist = new List<ToDoModel>();
+        toSaveOnDB = new ToDoModel();
+        GetInitalDataCommand.Execute(null);
     }
 
-    public ToDoModel ToSaveOnDb { get; set; }
-
-    public string Text { get; set; }
-
-    //private readonly DbConnection _dbConnection;
+    [ObservableProperty]
+    ObservableCollection<string> items;
 
 
-    public EditViewModel()
-    {
-        Items = new ObservableCollection<string>();
-
-    }
     [RelayCommand]
-
-    void Delete(string s)
+    private async void GetInitalData()
     {
-        Console.WriteLine('3');
-
-        char[] b = new char[s.Length];
-        StringReader sr = new StringReader(s);
-        sr.Read(b, 0, 13);
-        Console.WriteLine(b);
-        if (Items.Contains(s))
-        {
-            Items.Remove(s);
-        }
-        Close();
+        Todolist = await connection.GetItemsAsync();
     }
+    
+    
     [RelayCommand]
-    void Add()
-    {
-        /*if (string.IsNullOrWhiteSpace(Text))
+    async Task SaveOnDb()
+   {
+        if (ToSaveOnDB.Name == null)
             return;
-        Items.Add(Text);
-        Text = string.Empty;*/
-        CloseCommand = new Command(() =>
-        {
-            // Logic to close the pop-up screen
-        });
+        ToSaveOnDB.Val = 1;
+        await connection.UpdateItemAsync(ToSaveOnDB);
+        BackCommand.Execute(null);
     }
 
+    [RelayCommand]
+    async Task Delete()
+    {
+        WeakReferenceMessenger.Default.Send(new DeleteItemMessages(ToSaveOnDB));
+        Todolist.Remove(ToSaveOnDB);
+        ToSaveOnDB.Val = 0;
+        await Shell.Current.GoToAsync("..");
+        BackCommand.Execute(null);
+    }
 
+    [RelayCommand]
+
+    private async Task Back()
+    {
+        //var query = new Dictionary<string, object>();
+        if (ToSaveOnDB.Val == 1 || ToSaveOnDB.Val == 0)
+        {
+            var parameters = new Dictionary<string, object>()
+             {
+                 {"IdUser",ToSaveOnDB.Id }
+             };
+            await Shell.Current.GoToAsync("..", parameters);
+        }
+        else 
+        {
+            var parameters = new Dictionary<string, object>()
+             {
+                 {"IdUser",null }
+             };
+            await Shell.Current.GoToAsync("..", parameters);
+        }
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        ToSaveOnDB = query["Todo"] as ToDoModel;
+        ToSaveOnDB.Val = -1;
+    }
 }
 
 
- 
+
