@@ -33,4 +33,13 @@ public class ToDoModel
             val = value;
         }
     }
+
+    private bool isCompleted;
+    public bool IsCompleted
+    {
+        get => isCompleted;
+        set {
+            isCompleted = value;
+        }
+    }
 }

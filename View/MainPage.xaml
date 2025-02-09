@@ -6,14 +6,14 @@
              x:DataType="vm:MainPageViewModel"
               Shell.TabBarIsVisible="False"
              x:Class="TODOlist.MainPage"
-             BackgroundImageSource="blue.jpg">
+             BackgroundColor="Beige">
     <Grid 
           RowDefinitions="100, Auto, *"
-          ColumnDefinitions=".75*, .25*"
+          ColumnDefinitions=".75*, .35*"
           RowSpacing="10"
           ColumnSpacing="2">
         <Frame Grid.Row="0"
-                   BackgroundColor="Aquamarine"
+                   BackgroundColor="WhiteSmoke"
                    BorderColor="Black"
                    Margin="10"
                    Padding="5">
@@ -27,20 +27,20 @@
                 />
         </Frame>
 
-        <Button     Grid.Row="0"
-                    Grid.Column="1"
-                    Padding="15,10,30,10"
-                    Margin="10"
-                    HorizontalOptions="End"
+                <Button Grid.Row="0"
+                Grid.Column="1"
+                Padding="5"
+                Margin="10"
+                HorizontalOptions="FillAndExpand" 
                     Text="Save"
-                    Command="{Binding SaveOnDbCommand}"/>
-        <Button     Grid.Row="1"
+                Command="{Binding SaveOnDbCommand}"/>
+            <Button     Grid.Row="1"
                     Grid.Column="1"
                     Margin="10"
-                    HorizontalOptions="Center"
+                    HorizontalOptions="FillAndExpand"
                     Text="+"
                     Command="{Binding GoToAddPageCommand}"
-                    Padding="15,10,30,10"
+                    Padding="10,10,30,10"
                     />
         <ScrollView Grid.Row="2"
                     MaximumHeightRequest="400"
@@ -50,7 +50,9 @@
                             Margin="15,15"
                             SelectionMode="None" 
                             ItemsSource="{Binding Todolist}"
+                           
                             VerticalOptions="FillAndExpand"   
+                            
                             >
                 <CollectionView.ItemTemplate>
 
@@ -59,57 +61,61 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem BackgroundColor="Red"
-                                           Text="Delete"   
-                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}},Path=DeleteOnDbCommand}"
-                                           CommandParameter="{Binding .}"/>
+                                  <SwipeItem BackgroundColor="Red"
+                                               Text="Delete"   
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}, Path=DeleteOnDbCommand}"
+                                               CommandParameter="{Binding .}"/>
+
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Frame Padding="10,5,5,10">
+
+                            <Frame Padding="10,15,15,10"
+                                    BackgroundColor="Transparent">
                                 <Grid 
                                           ColumnDefinitions=".25*,.75*"
-                                          RowDefinitions="*,*"
+                                          RowDefinitions="Auto,Auto"
                                           
                                         >
-                                        <CheckBox
+                                    <CheckBox
                                                  Grid.Column="0"
-                                                 x:Name="checkBox">
+                                                 x:Name="checkBox"
+                                                   IsChecked="{Binding IsCompleted, Mode=TwoWay}">
 
-                                        </CheckBox>
-                                        <Label Text="{Binding Name}"
+                                    </CheckBox>
+                                    <Label Text="{Binding Name}"
+                                           TextColor="Blue"
                                            Grid.Column="1"    
-                                           FontSize="Medium">
-                                            <Label.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{ Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}},Path= GoToEditPageCommand}"
+                                           FontSize="Medium"
+                                            
+                                           >
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{ Binding Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}},Path= GoToEditPageCommand}"
                                                                      CommandParameter="{Binding .}"/>
-                                            </Label.GestureRecognizers>
-                                            <Label.Triggers>
-                                                <DataTrigger TargetType="Label"
+                                        </Label.GestureRecognizers>
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
                                                          Binding="{Binding Source={x:Reference checkBox}, Path=IsChecked}"
                                                          Value="true">
-                                                    <Setter Property="TextDecorations"
+                                                <Setter Property="TextDecorations"
                                                         Value="Strikethrough">
-                                                    </Setter>
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label"
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label"
                                                     Binding="{Binding Source={x:Reference checkBox},Path=IsChecked}"
                                                     Value="false">
-                                                    <Setter Property="TextDecorations"
+                                                <Setter Property="TextDecorations"
                                                 Value="None" />
-                                                </DataTrigger>
-                                            </Label.Triggers>
-                                        </Label>
-                                    </Grid>
-                                
-                                <Frame.GestureRecognizers>
-
-                                </Frame.GestureRecognizers>
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Grid>
                             </Frame>
+
                         </SwipeView>
                     </DataTemplate>
 
                 </CollectionView.ItemTemplate>
-
+             
             </CollectionView>
         </ScrollView>
     </Grid>

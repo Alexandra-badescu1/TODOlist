@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TODOlist.Models;
 using TODOlist.Service;
@@ -27,12 +27,28 @@ namespace TODOlist.ViewModel;
         //Title = "ToDoList Page";
         Todolist = new List<ToDoModel>();
         toSaveOnDB = new ToDoModel();
-        todo = new ToDoModel();// #added - instantiat mobelul 
-        GetInitalData();
+        todo = new ToDoModel();
+        GetInitialData();
+    }
+    [RelayCommand]
+    private async     Task
+GetInitialData()
+    {
+        var items = await _dbConnection.GetItemsAsync();
+
+        // Menține starea IsCompleted
+        foreach (var item in items)
+        {
+            var existingItem = Todolist.FirstOrDefault(x => x.Id == item.Id);
+            if (existingItem != null)
+            {
+                item.IsCompleted = existingItem.IsCompleted;
+            }
+        }
+
+        Todolist = items;
     }
 
-    [RelayCommand]
-    private async void GetInitalData() => Todolist = await _dbConnection.GetItemsAsync();
 
     [RelayCommand]
     async Task GoToEditPage(ToDoModel toDo)
@@ -63,47 +79,69 @@ namespace TODOlist.ViewModel;
     [RelayCommand]
     private async void SaveOnDb()
     {
-        await _dbConnection.SaveItemAsync(toSaveOnDB);
-        Todolist = await _dbConnection.GetItemsAsync();
+        if (toSaveOnDB != null)
+        {
+            await _dbConnection.SaveItemAsync(toSaveOnDB);
+            Todolist = await _dbConnection.GetItemsAsync(); // Reîncarcă lista, dar păstrează IsCompleted
+        }
     }
 
     [RelayCommand]
-
     public async Task DeleteOnDb(ToDoModel todo)
     {
+        if (todo == null) return;
+
         Todolist.Remove(todo);
-       await _dbConnection.DeleteItemAsync(todo);
+        await _dbConnection.DeleteItemAsync(todo);
+
+        // Refresh the list after deletion
+        Todolist = await _dbConnection.GetItemsAsync();
     }
 
+
     public void ApplyQueryAttributes(IDictionary<string, object> query)
-    { 
-        if(Todo.Id == -2 && query.ContainsKey("IdUser"))
+    {
+        if (Todo.Id == -2 && query.ContainsKey("IdUser"))
         {
-                if (query["IdUser"] == null)
-                    return;
-                var id = (int)query["IdUser"];
-                var todoItem = Todolist.Where(x => x.Id == id).FirstOrDefault();
-            // Todolist.Remove(todoItem);
-              if(todoItem.Val == 0)
-                deleteOnDbCommand.Execute(todoItem);
-                query = new Dictionary<string, object>();
-           
+            if (query["IdUser"] == null)
+                return;
+
+            // Ensure safe type conversion
+            if (query["IdUser"] is int id || (query["IdUser"] is string idStr && int.TryParse(idStr, out id)))
+            {
+                var todoItem = Todolist.FirstOrDefault(x => x.Id == id);
+
+                if (todoItem != null)
+                {
+                    Todolist.Remove(todoItem); // Explicitly remove it from the list
+                    if (todoItem.Val == 0)
+                    {
+                        deleteOnDbCommand.Execute(todoItem);
+                    }
+                }
+            }
         }
-         if (Todo.Id == -1 && query.ContainsKey("NameUser"))
+
+        if (Todo.Id == -1 && query.ContainsKey("NameUser"))
         {
             Console.WriteLine(Todo.Name);
 
-            var element = (ToDoModel)query["NameUser"];
-
-            if (element == null)
-                return;
-            ToSaveOnDB = element;
-            Todolist.Add(element);
-            query = new Dictionary<string, object>();
+            if (query["NameUser"] is ToDoModel element)
+            {
+                ToSaveOnDB = element;
+                Todolist.Add(element);
+            }
+            else
+            {
+                return; // If it's not a ToDoModel, exit early.
+            }
         }
-        GetInitalData();
+
+        // Make sure to properly await the async method
+        Task.Run(async () => await GetInitialData());
     }
-    
+
+
 }
 
 
