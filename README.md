@@ -1,6 +1,7 @@
-# tema_4
-![Screenshot_1691497389](https://github.com/Alexandra-badescu1/tema_4/assets/118006049/60999d6e-bc52-4964-b7b4-ecd10cc2a384)
-![Screenshot_1691497446](https://github.com/Alexandra-badescu1/tema_4/assets/118006049/bd4af873-a006-440f-ba23-48b1055f049c)
-![Screenshot_1691497450](https://github.com/Alexandra-badescu1/tema_4/assets/118006049/293eb416-4d20-4a3f-9071-4a6764799b09)
-![Screenshot_1691497459](https://github.com/Alexandra-badescu1/tema_4/assets/118006049/263563b1-ffb5-4465-b074-5ab6ee2b38e4)
-![Screenshot_1691497473](https://github.com/Alexandra-badescu1/tema_4/assets/118006049/9ac995f1-e1ac-45bb-8c6f-7c55cb535fc1)
+# ToDOList
+![TOdo3](https://github.com/user-attachments/assets/c14b15e0-2972-4ab2-a891-bbb6de87e5a7)
+![TO](https://github.com/user-attachments/assets/592d6a31-c254-44e0-9fcc-dcd020220d76)
+![Todo1](https://github.com/user-attachments/assets/2b94d667-2b60-46e4-a846-4478213c3a82)
+![Todo4](https://github.com/user-attachments/assets/690cc6aa-490a-428e-a3dc-17aa685c3376)
+
+A normal to do list app where you can check the itemas you already done , delete them and app new one. 
